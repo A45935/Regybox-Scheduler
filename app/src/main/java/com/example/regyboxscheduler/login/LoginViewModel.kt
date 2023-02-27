@@ -13,12 +13,11 @@ class LoginViewModel(
     private val services: RegyboxServices
 ) : ViewModel() {
 
-    fun login(boxId: String, username: String, password: String, callback: (String) -> Unit) {
+    fun login(boxId: String, username: String, password: String, callback: (String?) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val cookie = services.login(boxId, username, password)
-                if (cookie != null)
-                    callback(cookie)
+                callback(cookie)
             } catch (e: Exception) {
                 Log.e(TAG, e.toString())
             }

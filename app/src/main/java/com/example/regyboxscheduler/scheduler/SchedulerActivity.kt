@@ -5,6 +5,10 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import com.example.regyboxscheduler.DependenciesContainer
+import com.example.regyboxscheduler.login.LoginViewModel
+import com.example.regyboxscheduler.utils.viewModelInit
 import java.util.*
 
 class SchedulerActivity: ComponentActivity() {
@@ -17,13 +21,23 @@ class SchedulerActivity: ComponentActivity() {
         }
     }
 
+    private val repo by lazy {
+        (application as DependenciesContainer)
+    }
+
+    private val viewModel by viewModels<LoginViewModel> {
+        viewModelInit {
+            ScheduleViewModel(repo.regyboxServices)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
             ScheduleView(
                 onLogoutRequest = {
-                    //TODO del cookies
+                    repo.sharedPrefs.cookies = null
                     finish() 
                 },
                 date = Date(),

@@ -1,15 +1,13 @@
 package com.example.regyboxscheduler.login
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import com.example.regyboxscheduler.DependenciesContainer
 import com.example.regyboxscheduler.info.InfoActivity
 import com.example.regyboxscheduler.scheduler.SchedulerActivity
-import com.example.regyboxscheduler.services.RegyboxServices
 import com.example.regyboxscheduler.utils.Cookies
 import com.example.regyboxscheduler.utils.viewModelInit
 
@@ -35,8 +33,14 @@ class LoginActivity : ComponentActivity() {
             LoginView(
                 onLoginRequest = { boxId, username, password ->
                     viewModel.login(boxId, username, password) { cookie ->
-                        repo.sharedPrefs.cookies = Cookies("%2A$cookie", cookie)
-                        SchedulerActivity.navigate(this)
+                        if(cookie != null) {
+                            repo.sharedPrefs.cookies = Cookies("%2A$cookie", cookie)
+                            SchedulerActivity.navigate(this)
+                        } else {
+                            runOnUiThread {
+                                Toast.makeText(this, "Invalid parameters", Toast.LENGTH_SHORT).show()
+                            }
+                        }
                     }
                 },
                 onInfoRequest = { InfoActivity.navigate(this) }
