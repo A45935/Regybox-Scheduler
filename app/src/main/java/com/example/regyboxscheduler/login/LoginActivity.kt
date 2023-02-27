@@ -2,23 +2,33 @@ package com.example.regyboxscheduler.login
 
 import android.app.Activity
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.example.regyboxscheduler.R
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import com.example.regyboxscheduler.DependenciesContainer
+import com.example.regyboxscheduler.info.InfoActivity
+import com.example.regyboxscheduler.services.RegyboxServices
+import com.example.regyboxscheduler.utils.viewModelInit
 
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : ComponentActivity() {
 
-    companion object {
-        fun navigate(origin: Activity) {
-            with(origin) {
-                val intent = Intent(this, LoginActivity::class.java)
-                startActivity(intent)
-            }
+    private val viewModel by viewModels<LoginViewModel> {
+        viewModelInit {
+            val app = (application as DependenciesContainer)
+            LoginViewModel(app.regyboxServices)
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContent {
+            LoginView(
+                onLoginRequest = { boxId, username, password ->
+                    viewModel.login(boxId, username, password)
+                },
+                onInfoRequest = { InfoActivity.navigate(this) }
+            )
+        }
     }
 }

@@ -10,7 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.regyboxscheduler.APP_VERSION
 import com.example.regyboxscheduler.ui.SchedulerTheme
 import com.example.regyboxscheduler.ui.TopBar
 import com.example.regyboxscheduler.R
@@ -38,9 +40,14 @@ fun InfoView (
             ) {
                 Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.Bottom) {
                     Text(
-                        text = "David Costa",
-                        style = MaterialTheme.typography.h6,
-                        color = MaterialTheme.colors.primaryVariant
+                        text = "Version $APP_VERSION",
+                        style = MaterialTheme.typography.h6
+                    )
+                }
+                Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.Bottom) {
+                    Text(
+                        text = "made by David Costa",
+                        style = MaterialTheme.typography.h6
                     )
                 }
                 Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.Top) {
@@ -69,4 +76,14 @@ fun InfoView (
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun AboutPreview() {
+    InfoView(
+        onBackRequest = {},
+        onSendEmailRequested = {},
+        onUrlRequested = {}
+    )
 }

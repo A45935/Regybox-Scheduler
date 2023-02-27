@@ -18,7 +18,7 @@ import com.example.regyboxscheduler.ui.TopBar
 
 @Composable
 fun LoginView (
-    onSignInRequest: (username: String, password: String) -> Unit,
+    onLoginRequest: (boxId: String, username: String, password: String) -> Unit,
     onInfoRequest: () -> Unit
 ) {
     val boxId = rememberSaveable { mutableStateOf("") }
@@ -45,12 +45,6 @@ fun LoginView (
                     .padding(innerPadding)
                     .fillMaxSize()
             ) {
-                Row {
-                    Text(
-                        text = "Regybox Scheduler",
-                        modifier = Modifier.padding(8.dp)
-                    )
-                }
                 Text(text = "Box Id:", modifier = Modifier.padding(8.dp))
                 Row {
                     TextField(
@@ -91,7 +85,7 @@ fun LoginView (
                 }
                 Row {
                     Button(
-                        onClick = { onSignInRequest(currentUsername, currentPassword) }
+                        onClick = { onLoginRequest(currentBoxId, currentUsername, currentPassword) }
                     ) {
                         Text(text = "Login")
                     }
@@ -105,7 +99,7 @@ fun LoginView (
 @Composable
 private fun LoginPreview() {
     LoginView(
-        onSignInRequest = { _, _ -> },
+        onLoginRequest = { _, _, _ -> },
         onInfoRequest = {}
     )
 }

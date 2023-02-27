@@ -37,7 +37,7 @@ class InfoActivity : ComponentActivity() {
             val intent = Intent(Intent.ACTION_SENDTO).apply {
                 data = Uri.parse("mailto:")
                 putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
-                putExtra(Intent.EXTRA_SUBJECT, "About the Battleship App")
+                putExtra(Intent.EXTRA_SUBJECT, "About the Scheduler App")
             }
             startActivity(intent)
         } catch (e: ActivityNotFoundException) {
