@@ -10,7 +10,7 @@ class RegyboxServices (
     private val httpClient: OkHttpClient,
 ) {
 
-    fun login (idBox: String, username: String, password: String) {
+    fun login (idBox: String, username: String, password: String): String? {
         val formBody = FormBody.Builder()
             .add("id_box", idBox)
             .add("login", username)
@@ -23,7 +23,19 @@ class RegyboxServices (
             .build()
 
         httpClient.newCall(request).execute().use { response ->
-            println(response.body.string())
+            if (response.isSuccessful) {
+                val responseString = response.body.string().split("\n")
+                println(responseString)
+
+                if (responseString.size == 1 || !responseString[1].startsWith("\t\twindow.open(\"../../../set_session.php?z="))
+                    println("Invalid parameters!")
+                else {
+                    val cookie = responseString[1].substringAfter("window.open(\"../../../set_session.php?z=").substringBefore("\",\"_self\");")
+                    println(cookie)
+                    return cookie
+                }
+            }
+            return null
         }
     }
 

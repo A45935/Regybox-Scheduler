@@ -8,24 +8,36 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import com.example.regyboxscheduler.DependenciesContainer
 import com.example.regyboxscheduler.info.InfoActivity
+import com.example.regyboxscheduler.scheduler.SchedulerActivity
 import com.example.regyboxscheduler.services.RegyboxServices
+import com.example.regyboxscheduler.utils.Cookies
 import com.example.regyboxscheduler.utils.viewModelInit
 
 class LoginActivity : ComponentActivity() {
 
+    private val repo by lazy {
+        (application as DependenciesContainer)
+    }
+
     private val viewModel by viewModels<LoginViewModel> {
         viewModelInit {
-            val app = (application as DependenciesContainer)
-            LoginViewModel(app.regyboxServices)
+            LoginViewModel(repo.regyboxServices)
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (repo.sharedPrefs.cookies != null)
+            SchedulerActivity.navigate(this)
+
         setContent {
             LoginView(
                 onLoginRequest = { boxId, username, password ->
-                    viewModel.login(boxId, username, password)
+                    viewModel.login(boxId, username, password) { cookie ->
+                        repo.sharedPrefs.cookies = Cookies("%2A$cookie", cookie)
+                        SchedulerActivity.navigate(this)
+                    }
                 },
                 onInfoRequest = { InfoActivity.navigate(this) }
             )
