@@ -1,5 +1,6 @@
 package com.example.regyboxscheduler.services
 
+import com.example.regyboxscheduler.utils.SharedPrefs
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -8,7 +9,19 @@ private const val HOST = "https://www.regibox.pt/app/app_nova/php"
 
 class RegyboxServices (
     private val httpClient: OkHttpClient,
+    sharedPrefs: SharedPrefs
 ) {
+
+    private val clientWithCookie = httpClient.newBuilder()
+        .addInterceptor { chain ->
+            val originalRequest = chain.request()
+
+            val builder = originalRequest.newBuilder()
+                .header("Cookie", "regybox_boxes=${sharedPrefs.cookies!!.boxes}; regybox_user=${sharedPrefs.cookies!!.user}")
+
+            val newRequest = builder.build()
+            chain.proceed(newRequest)
+        }.build()
 
     fun login (idBox: String, username: String, password: String): String? {
         val formBody = FormBody.Builder()
@@ -44,7 +57,7 @@ class RegyboxServices (
             .url("$HOST/aulas/aulas.php?valor1=$timestamp")
             .build()
 
-        httpClient.newCall(request).execute().use { response ->
+        clientWithCookie.newCall(request).execute().use { response ->
             println(response.body.string())
         }
     }
@@ -54,7 +67,7 @@ class RegyboxServices (
             .url("$HOST/aulas/marca_aulas.php?id_aula=$idAula&data=$data&source=mes&ano=$ano&id_rato=$idRato&x=$x")
             .build()
 
-        httpClient.newCall(request).execute().use { response ->
+        clientWithCookie.newCall(request).execute().use { response ->
             println(response.body.string())
         }
     }
@@ -64,7 +77,7 @@ class RegyboxServices (
             .url("$HOST/aulas/cancela_aula.php?id_aula=$idAula&data=$data&source=mes&ano=$ano&x=$x")
             .build()
 
-        httpClient.newCall(request).execute().use { response ->
+        clientWithCookie.newCall(request).execute().use { response ->
             println(response.body.string())
         }
     }

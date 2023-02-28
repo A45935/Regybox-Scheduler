@@ -51,4 +51,4 @@ class SchedulerActivity: ComponentActivity() {
     }
 }
 
-data class GymClass (val classId: String, val nome: String, val hora: String)
+data class GymClass (val classId: String, val nome: String, val hora: String, var scheduled: Boolean)

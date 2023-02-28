@@ -7,9 +7,11 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.regyboxscheduler.ui.SchedulerTheme
 import com.example.regyboxscheduler.ui.TopBar
@@ -42,7 +44,10 @@ fun ScheduleView (
             ) {
                 Row {
                     Text(text = date.toString(), modifier = Modifier.padding(8.dp))
+                }
+                Row {
                     Button(onClick = previousDayClasses) { Text(text = "Previous day") }
+                    Spacer(modifier = Modifier.width(32.dp))
                     Button(onClick = nextDayClasses) { Text(text = "Next day") }
                 }
                 LazyColumn(
@@ -68,6 +73,7 @@ fun GymClassInfoView(
     onClassSelected: () -> Unit,
 ) {
     Card(
+        backgroundColor = if (classInfo.scheduled) Color(0x77FA4949) else Color(0xFFFFFFFF),
         shape = MaterialTheme.shapes.medium,
         elevation = 4.dp,
         modifier = Modifier
@@ -94,5 +100,25 @@ fun GymClassInfoView(
                     .padding(top = 8.dp, end = 8.dp),
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SchedulerPreview() {
+    ScheduleView (
+        onLogoutRequest = {},
+        date = Date(),
+        classes = demoClasses,
+        nextDayClasses = {},
+        previousDayClasses = {},
+        scheduleClass = {},
+        cancelClass = {}
+    )
+}
+
+private val demoClasses = buildList {
+    repeat(10) {
+        add(GymClass("$it", "Class $it", "$it PM", it%2 == 0))
     }
 }

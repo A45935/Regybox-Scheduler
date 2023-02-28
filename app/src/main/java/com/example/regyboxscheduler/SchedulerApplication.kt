@@ -23,7 +23,7 @@ class SchedulerApplication : DependenciesContainer, Application() {
     }
 
     override val regyboxServices: RegyboxServices
-        get() = RegyboxServices(httpClient)
+        get() = RegyboxServices(httpClient, sharedPrefs)
     override val sharedPrefs: SharedPrefs
         get() = SharedPrefs(this)
 }
