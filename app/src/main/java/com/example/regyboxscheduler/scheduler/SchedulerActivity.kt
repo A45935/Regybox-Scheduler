@@ -6,9 +6,15 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.regyboxscheduler.DependenciesContainer
-import com.example.regyboxscheduler.login.LoginViewModel
 import com.example.regyboxscheduler.utils.viewModelInit
+import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.util.*
 
 class SchedulerActivity: ComponentActivity() {
@@ -25,7 +31,7 @@ class SchedulerActivity: ComponentActivity() {
         (application as DependenciesContainer)
     }
 
-    private val viewModel by viewModels<LoginViewModel> {
+    private val viewModel by viewModels<ScheduleViewModel> {
         viewModelInit {
             ScheduleViewModel(repo.regyboxServices)
         }
@@ -35,18 +41,27 @@ class SchedulerActivity: ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
+            val timestamp by viewModel.timestamp.collectAsState()
+            val classes by viewModel.classes.collectAsState()
+
             ScheduleView(
                 onLogoutRequest = {
                     repo.sharedPrefs.cookies = null
                     finish() 
                 },
-                date = Date(),
-                classes = emptyList(),
-                nextDayClasses = {},
-                previousDayClasses = {},
-                scheduleClass = {},
-                cancelClass = {}
+                date = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date(timestamp * 1000)) ,
+                classes = classes,
+                nextDayClasses = { viewModel.increaseDay() },
+                previousDayClasses = { viewModel.decreaseDay() },
+                scheduleClass = { viewModel.scheduleClass() },
+                cancelClass = { viewModel.cancelClass() }
             )
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.getClasses()
+            }
         }
     }
 }

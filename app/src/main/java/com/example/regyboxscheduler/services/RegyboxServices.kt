@@ -1,5 +1,7 @@
 package com.example.regyboxscheduler.services
 
+import android.util.Log
+import com.example.regyboxscheduler.TAG
 import com.example.regyboxscheduler.utils.SharedPrefs
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
@@ -52,13 +54,14 @@ class RegyboxServices (
         }
     }
 
-    fun getAulas (timestamp: Long) {
+    fun getAulas (timestamp: String) {
         val request = Request.Builder()
             .url("$HOST/aulas/aulas.php?valor1=$timestamp")
             .build()
 
         clientWithCookie.newCall(request).execute().use { response ->
-            println(response.body.string())
+            Log.v(TAG, timestamp)
+            Log.v(TAG, response.body.string())
         }
     }
 

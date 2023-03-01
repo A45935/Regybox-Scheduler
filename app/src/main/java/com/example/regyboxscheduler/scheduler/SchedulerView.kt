@@ -8,8 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -20,7 +18,7 @@ import java.util.Date
 @Composable
 fun ScheduleView (
     onLogoutRequest: () -> Unit,
-    date: Date,
+    date: String,
     classes: List<GymClass>,
     nextDayClasses: () -> Unit,
     previousDayClasses: () -> Unit,
@@ -43,23 +41,27 @@ fun ScheduleView (
                     .fillMaxSize()
             ) {
                 Row {
-                    Text(text = date.toString(), modifier = Modifier.padding(8.dp))
+                    Text(text = date, modifier = Modifier.padding(8.dp))
                 }
                 Row {
                     Button(onClick = previousDayClasses) { Text(text = "Previous day") }
                     Spacer(modifier = Modifier.width(32.dp))
                     Button(onClick = nextDayClasses) { Text(text = "Next day") }
                 }
-                LazyColumn(
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.padding(innerPadding)
-                ) {
-                    items(classes.size) {
-                        GymClassInfoView(
-                            classInfo = classes[it],
-                            onClassSelected = { scheduleClass(classes[it].classId) }
-                        )
+                if (classes.isEmpty()){
+                    Text(text = "No classes to schedule", modifier = Modifier.padding(8.dp))
+                } else {
+                    LazyColumn(
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.padding(innerPadding)
+                    ) {
+                        items(classes.size) {
+                            GymClassInfoView(
+                                classInfo = classes[it],
+                                onClassSelected = { scheduleClass(classes[it].classId) }
+                            )
+                        }
                     }
                 }
             }
@@ -103,6 +105,7 @@ fun GymClassInfoView(
     }
 }
 
+/*
 @Preview(showBackground = true)
 @Composable
 private fun SchedulerPreview() {
@@ -112,13 +115,13 @@ private fun SchedulerPreview() {
         classes = demoClasses,
         nextDayClasses = {},
         previousDayClasses = {},
-        scheduleClass = {},
-        cancelClass = {}
-    )
+        scheduleClass = {}
+    ) {}
 }
-
+*/
 private val demoClasses = buildList {
     repeat(10) {
         add(GymClass("$it", "Class $it", "$it PM", it%2 == 0))
     }
 }
+
