@@ -7,7 +7,7 @@ import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-private const val HOST = "https://www.regibox.pt/app/app_nova/php"
+private const val HOST = "https://www.regibox.pt/app/app_nova"
 
 class RegyboxServices (
     private val httpClient: OkHttpClient,
@@ -33,7 +33,7 @@ class RegyboxServices (
             .build()
 
         val request = Request.Builder()
-            .url("$HOST/login/scripts/verifica_acesso.php?lang=pt")
+            .url("$HOST/php/login/scripts/verifica_acesso.php?lang=pt")
             .post(formBody)
             .build()
 
@@ -54,20 +54,19 @@ class RegyboxServices (
         }
     }
 
-    fun getAulas (timestamp: String) {
+    fun getClasses (timestamp: String): String {
         val request = Request.Builder()
-            .url("$HOST/aulas/aulas.php?valor1=$timestamp")
+            .url("$HOST/php/aulas/aulas.php?valor1=$timestamp")
             .build()
 
         clientWithCookie.newCall(request).execute().use { response ->
-            Log.v(TAG, timestamp)
-            Log.v(TAG, response.body.string())
+            return response.body.string()
         }
     }
 
-    fun marcarAula (idAula: String, data: String, ano: String, idRato: String, x: String) {
+    fun scheduleClass (url: String) {
         val request = Request.Builder()
-            .url("$HOST/aulas/marca_aulas.php?id_aula=$idAula&data=$data&source=mes&ano=$ano&id_rato=$idRato&x=$x")
+            .url("$HOST/$url")
             .build()
 
         clientWithCookie.newCall(request).execute().use { response ->
@@ -75,9 +74,9 @@ class RegyboxServices (
         }
     }
 
-    fun cancelarAula (idAula: String, data: String, ano: String, x: String) {
+    fun cancelClass (classId: String, data: String, ano: String, x: String) {
         val request = Request.Builder()
-            .url("$HOST/aulas/cancela_aula.php?id_aula=$idAula&data=$data&source=mes&ano=$ano&x=$x")
+            .url("$HOST/php/aulas/cancela_aula.php?id_aula=$classId&data=$data&source=mes&ano=$ano&x=$x")
             .build()
 
         clientWithCookie.newCall(request).execute().use { response ->

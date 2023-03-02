@@ -49,12 +49,12 @@ class SchedulerActivity: ComponentActivity() {
                     repo.sharedPrefs.cookies = null
                     finish() 
                 },
-                date = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date(timestamp * 1000)) ,
+                date = SimpleDateFormat("E dd/MM/yyyy", Locale.getDefault()).format(Date(timestamp * 1000)) ,
                 classes = classes,
                 nextDayClasses = { viewModel.increaseDay() },
                 previousDayClasses = { viewModel.decreaseDay() },
-                scheduleClass = { viewModel.scheduleClass() },
-                cancelClass = { viewModel.cancelClass() }
+                scheduleClass = { selected -> viewModel.scheduleClass(selected) },
+                cancelClass = { selected -> viewModel.cancelClass(selected) }
             )
         }
 
@@ -66,4 +66,4 @@ class SchedulerActivity: ComponentActivity() {
     }
 }
 
-data class GymClass (val classId: String, val nome: String, val hora: String, var scheduled: Boolean)
+data class GymClass (val classId: String, val nome: String, val hora: String, val scheduleTime: String, var scheduled: Boolean = false)

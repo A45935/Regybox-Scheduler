@@ -13,7 +13,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.regyboxscheduler.ui.SchedulerTheme
 import com.example.regyboxscheduler.ui.TopBar
-import java.util.Date
 
 @Composable
 fun ScheduleView (
@@ -22,8 +21,8 @@ fun ScheduleView (
     classes: List<GymClass>,
     nextDayClasses: () -> Unit,
     previousDayClasses: () -> Unit,
-    scheduleClass: (String) -> Unit,
-    cancelClass: (String) -> Unit
+    scheduleClass: (GymClass) -> Unit,
+    cancelClass: (GymClass) -> Unit
 ) {
     SchedulerTheme {
         Scaffold(
@@ -59,7 +58,12 @@ fun ScheduleView (
                         items(classes.size) {
                             GymClassInfoView(
                                 classInfo = classes[it],
-                                onClassSelected = { scheduleClass(classes[it].classId) }
+                                onClassSelected = {
+                                    if (!classes[it].scheduled)
+                                        scheduleClass(classes[it])
+                                    else
+                                        cancelClass(classes[it])
+                                }
                             )
                         }
                     }
@@ -87,6 +91,7 @@ fun GymClassInfoView(
         ) {
             Text(
                 text = classInfo.nome,
+                color = Color.Black,
                 style = MaterialTheme.typography.subtitle1,
                 textAlign = TextAlign.Center,
                 maxLines = 1,
@@ -94,6 +99,7 @@ fun GymClassInfoView(
             )
             Text(
                 text = classInfo.hora,
+                color = Color.Black,
                 style = MaterialTheme.typography.subtitle1,
                 textAlign = TextAlign.Center,
                 maxLines = 1,
@@ -105,23 +111,23 @@ fun GymClassInfoView(
     }
 }
 
-/*
 @Preview(showBackground = true)
 @Composable
 private fun SchedulerPreview() {
     ScheduleView (
         onLogoutRequest = {},
-        date = Date(),
+        date = "22/03/2023",
         classes = demoClasses,
         nextDayClasses = {},
         previousDayClasses = {},
-        scheduleClass = {}
-    ) {}
+        scheduleClass = {},
+        cancelClass = {}
+    )
 }
-*/
+
 private val demoClasses = buildList {
     repeat(10) {
-        add(GymClass("$it", "Class $it", "$it PM", it%2 == 0))
+        add(GymClass("$it", "Class $it", "$it PM", "", it%2 == 0))
     }
 }
 
