@@ -127,7 +127,7 @@ private fun SchedulerPreview() {
 
 private val demoClasses = buildList {
     repeat(10) {
-        add(GymClass("$it", "Class $it", "$it PM", "", it%2 == 0))
+        add(GymClass("$it", "Class $it", "$it PM", 123344, it%2 == 0))
     }
 }
 

@@ -11,11 +11,14 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.work.*
 import com.example.regyboxscheduler.DependenciesContainer
+import com.example.regyboxscheduler.utils.SchedulerWorker
 import com.example.regyboxscheduler.utils.viewModelInit
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class SchedulerActivity: ComponentActivity() {
     companion object {
@@ -37,6 +40,26 @@ class SchedulerActivity: ComponentActivity() {
         }
     }
 
+    private fun scheduleClass(selectedClass: GymClass, timestamp: Long) {
+        val scheduleWorkRequest = OneTimeWorkRequestBuilder<SchedulerWorker>()
+            .setInputData(workDataOf("TIMESTAMP" to timestamp))
+            .setInputData(workDataOf("ID" to selectedClass.classId))
+            .setInitialDelay(selectedClass.scheduleTime, TimeUnit.SECONDS)
+            .build()
+
+        val workerId = scheduleWorkRequest.id
+        //TODO add to database mapped to classId
+
+        WorkManager.getInstance(this).enqueue(scheduleWorkRequest)
+    }
+
+    private fun cancelSchedule(selectedClass: GymClass) {
+        //selectedClass.scheduled = !selectedClass.scheduled
+        val workerId = UUID.randomUUID() //TODO get workerId from database
+        WorkManager.getInstance(this).cancelWorkById(workerId)
+        //TODO remove entry from database
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -53,8 +76,8 @@ class SchedulerActivity: ComponentActivity() {
                 classes = classes,
                 nextDayClasses = { viewModel.increaseDay() },
                 previousDayClasses = { viewModel.decreaseDay() },
-                scheduleClass = { selected -> viewModel.scheduleClass(selected) },
-                cancelClass = { selected -> viewModel.cancelClass(selected) }
+                scheduleClass = { selected -> scheduleClass(selected, timestamp) },
+                cancelClass = { selected -> cancelSchedule(selected) }
             )
         }
 
@@ -66,4 +89,4 @@ class SchedulerActivity: ComponentActivity() {
     }
 }
 
-data class GymClass (val classId: String, val nome: String, val hora: String, val scheduleTime: String, var scheduled: Boolean = false)
+data class GymClass(val classId: String, val nome: String, val hora: String, val scheduleTime: Long, var scheduled: Boolean = false)
