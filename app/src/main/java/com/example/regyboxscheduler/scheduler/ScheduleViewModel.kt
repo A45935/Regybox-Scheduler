@@ -1,12 +1,10 @@
 package com.example.regyboxscheduler.scheduler
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.work.CoroutineWorker
-import androidx.work.WorkerParameters
-import com.example.regyboxscheduler.DependenciesContainer
 import com.example.regyboxscheduler.services.RegyboxServices
+import com.example.regyboxscheduler.repository.SchedulerDatabase
+import com.example.regyboxscheduler.repository.SchedulerRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,14 +15,15 @@ import org.jsoup.Jsoup
 private const val DAY = 86400
 
 class ScheduleViewModel(
-    private val services: RegyboxServices
+    private val services: RegyboxServices,
+    private val db: SchedulerRepository
 ) : ViewModel() {
 
     //current epoch time in seconds
     private val _timestamp = MutableStateFlow(System.currentTimeMillis()/1000)
     val timestamp = _timestamp.asStateFlow()
 
-    private val _classes = MutableStateFlow<List<GymClass>>(emptyList())
+    private val _classes = MutableStateFlow<MutableList<GymClass>>(mutableListOf())
     val classes = _classes.asStateFlow()
 
     fun getClasses() {
@@ -55,15 +54,16 @@ class ScheduleViewModel(
                             val detailsThird = third[0].select("iframe").first()!!.attr("src")
                             val classId = detailsThird.substringAfter("feed_id=").substringBefore('&')
                             val timeToSchedule = _timestamp.value + detailsThird.substringAfter("tempo=").substringBefore('&').toLong()
+                            val scheduled = db.findById(classId) != null
 
-                            classes.add(GymClass(classId, first[0].ownText(), second[0].ownText(), timeToSchedule))
+                            classes.add(GymClass(classId, first[0].ownText(), second[0].ownText(), timeToSchedule, scheduled))
                         }
                     }
 
                     classes
                 } catch (e: Exception) {
                     println(e.message)
-                    emptyList()
+                    mutableListOf()
                 }
         }
     }
