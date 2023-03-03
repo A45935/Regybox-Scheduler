@@ -1,5 +1,3 @@
-apply plugin: 'kotlin-kapt'
-
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
@@ -51,9 +49,6 @@ android {
 }
 
 dependencies {
-    kapt "androidx.room:room-compiler:2.5.0"
-    implementation("androidx.room:room-runtime:2.5.0")
-    annotationProcessor("androidx.room:room-compiler:2.5.0")
     implementation 'org.jsoup:jsoup:1.15.4'
 
     implementation 'androidx.core:core-ktx:1.9.0'

@@ -3,8 +3,7 @@ package com.example.regyboxscheduler.scheduler
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.regyboxscheduler.services.RegyboxServices
-import com.example.regyboxscheduler.repository.SchedulerDatabase
-import com.example.regyboxscheduler.repository.SchedulerRepository
+import com.example.regyboxscheduler.utils.SharedPrefs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,7 +15,7 @@ private const val DAY = 86400
 
 class ScheduleViewModel(
     private val services: RegyboxServices,
-    private val db: SchedulerRepository
+    private val sharedPrefs: SharedPrefs
 ) : ViewModel() {
 
     //current epoch time in seconds
@@ -53,8 +52,8 @@ class ScheduleViewModel(
 
                             val detailsThird = third[0].select("iframe").first()!!.attr("src")
                             val classId = detailsThird.substringAfter("feed_id=").substringBefore('&')
-                            val timeToSchedule = _timestamp.value + detailsThird.substringAfter("tempo=").substringBefore('&').toLong()
-                            val scheduled = db.findById(classId) != null
+                            val timeToSchedule = (System.currentTimeMillis()/1000) + detailsThird.substringAfter("tempo=").substringBefore('&').toLong()
+                            val scheduled = sharedPrefs.prefs.getInt(classId, 0) != 0
 
                             classes.add(GymClass(classId, first[0].ownText(), second[0].ownText(), timeToSchedule, scheduled))
                         }

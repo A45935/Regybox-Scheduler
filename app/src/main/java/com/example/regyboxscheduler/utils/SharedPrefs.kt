@@ -1,10 +1,12 @@
 package com.example.regyboxscheduler.utils
 
 import android.content.Context
+import android.content.SharedPreferences
+import java.util.UUID
 
 class SharedPrefs (private val context: Context) {
 
-    private val prefs by lazy {
+    val prefs: SharedPreferences by lazy {
         context.getSharedPreferences("SharedPrefs", Context.MODE_PRIVATE)
     }
 

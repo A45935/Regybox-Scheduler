@@ -79,7 +79,7 @@ fun GymClassInfoView(
     onClassSelected: () -> Unit,
 ) {
     Card(
-        backgroundColor = if (classInfo.scheduled) Color(0x77FA4949) else Color(0xFFFFFFFF),
+        backgroundColor = if (classInfo.scheduled) Color(0xFF009688) else Color(0xFFFFFFFF),
         shape = MaterialTheme.shapes.medium,
         elevation = 4.dp,
         modifier = Modifier

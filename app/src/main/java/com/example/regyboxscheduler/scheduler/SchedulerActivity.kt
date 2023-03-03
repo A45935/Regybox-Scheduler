@@ -15,7 +15,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.regyboxscheduler.DependenciesContainer
-import com.example.regyboxscheduler.repository.Schedule
+import com.example.regyboxscheduler.utils.AlarmScheduler
 import com.example.regyboxscheduler.utils.SchedulerBroadcastReceiver
 import com.example.regyboxscheduler.utils.viewModelInit
 import kotlinx.coroutines.launch
@@ -38,30 +38,33 @@ class SchedulerActivity: ComponentActivity() {
 
     private val viewModel by viewModels<ScheduleViewModel> {
         viewModelInit {
-            ScheduleViewModel(repo.regyboxServices, repo.database)
+            ScheduleViewModel(repo.regyboxServices, repo.sharedPrefs)
         }
     }
 
-    private fun scheduleClass(selectedClass: GymClass, timestamp: Long) {
-        //val intentId = UUID.randomUUID()
-        val alarmIntent =
-            Intent(applicationContext, SchedulerBroadcastReceiver::class.java).let { intent ->
-                intent.putExtra("TIMESTAMP", timestamp)
-                intent.putExtra("ID", selectedClass.classId)
-                PendingIntent.getBroadcast(applicationContext, 0, intent, FLAG_IMMUTABLE)
-            }
+    private val alarmScheduler by lazy {
+        AlarmScheduler(this)
+    }
 
-        val alarmClockInfo = AlarmManager.AlarmClockInfo(timestamp, alarmIntent)
+    private fun scheduleClass(selectedClass: GymClass) {
+        alarmScheduler.schedule(selectedClass)
 
-        repo.alarmManager.setAlarmClock(alarmClockInfo, alarmIntent)
-        repo.database.insert(Schedule(selectedClass.classId, alarmIntent))
+        repo.sharedPrefs.prefs
+            .edit()
+            .putInt(selectedClass.classId, selectedClass.hashCode())
+            .apply()
+
         viewModel.getClasses()
     }
 
     private fun cancelSchedule(selectedClass: GymClass) {
-        val schedule = repo.database.findById(selectedClass.classId)!!
-        repo.alarmManager.cancel(schedule.pendingIntent)
-        repo.database.delete(schedule)
+        alarmScheduler.cancel(selectedClass)
+
+        repo.sharedPrefs.prefs
+            .edit()
+            .remove(selectedClass.classId)
+            .apply()
+
         viewModel.getClasses()
     }
 
@@ -81,7 +84,7 @@ class SchedulerActivity: ComponentActivity() {
                 classes = classes,
                 nextDayClasses = { viewModel.increaseDay() },
                 previousDayClasses = { viewModel.decreaseDay() },
-                scheduleClass = { selected -> scheduleClass(selected, timestamp) },
+                scheduleClass = { selected -> scheduleClass(selected) },
                 cancelClass = { selected -> cancelSchedule(selected) }
             )
         }
