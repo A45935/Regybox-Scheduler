@@ -53,7 +53,7 @@ class ScheduleViewModel(
                             val detailsThird = third[0].select("iframe").first()!!.attr("src")
                             val classId = detailsThird.substringAfter("feed_id=").substringBefore('&')
                             val timeToSchedule = (System.currentTimeMillis()/1000) + detailsThird.substringAfter("tempo=").substringBefore('&').toLong()
-                            val scheduled = sharedPrefs.prefs.getInt(classId, 0) != 0
+                            val scheduled = sharedPrefs.prefs.getInt(sharedPrefs.cookies!!.user + classId, 0) != 0
 
                             classes.add(GymClass(classId, first[0].ownText(), second[0].ownText(), timeToSchedule, scheduled))
                         }

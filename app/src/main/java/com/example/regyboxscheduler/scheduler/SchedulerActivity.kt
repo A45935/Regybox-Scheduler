@@ -57,12 +57,12 @@ class SchedulerActivity: ComponentActivity() {
 
         repo.sharedPrefs.prefs
             .edit()
-            .putInt(selectedClass.classId, uuid)
+            .putInt(repo.sharedPrefs.cookies!!.user + selectedClass.classId, uuid)
             .apply()
 
         viewModel.getClasses()
 
-        showNotification("Class Scheduled", "Auto Schedule for ${selectedClass.nome} at ${selectedClass.hora}")
+        showNotification(selectedClass.classId.toInt(),"Class Scheduled", "Auto Schedule for ${selectedClass.nome} at ${selectedClass.hora}")
     }
 
     private fun cancelSchedule(selectedClass: GymClass) {
@@ -72,26 +72,26 @@ class SchedulerActivity: ComponentActivity() {
 
         repo.sharedPrefs.prefs
             .edit()
-            .remove(selectedClass.classId)
+            .remove(repo.sharedPrefs.cookies!!.user + selectedClass.classId)
             .apply()
 
         viewModel.getClasses()
 
-        removeNotification()
+        removeNotification(selectedClass.classId.toInt())
     }
 
-    private fun showNotification(bigMessage: String, smallMessage: String) {
+    private fun showNotification(id: Int, bigMessage: String, smallMessage: String) {
         val notification = NotificationCompat.Builder(applicationContext, "channel_id")
             .setSmallIcon(R.drawable.notification_icon)
             .setContentTitle(bigMessage)
             .setContentText(smallMessage)
             .build()
 
-        notificationManager.notify(1, notification)
+        notificationManager.notify(id, notification)
     }
 
-    private fun removeNotification() {
-        notificationManager.cancel(1)
+    private fun removeNotification(id: Int) {
+        notificationManager.cancel(id)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

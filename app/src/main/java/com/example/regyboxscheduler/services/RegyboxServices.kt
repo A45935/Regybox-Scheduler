@@ -1,7 +1,5 @@
 package com.example.regyboxscheduler.services
 
-import android.util.Log
-import com.example.regyboxscheduler.TAG
 import com.example.regyboxscheduler.utils.SharedPrefs
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
