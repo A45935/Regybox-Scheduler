@@ -47,18 +47,20 @@ class SchedulerActivity: ComponentActivity() {
     }
 
     private fun scheduleClass(selectedClass: GymClass) {
-        alarmScheduler.schedule(selectedClass)
+        val uuid = alarmScheduler.schedule(selectedClass)
 
         repo.sharedPrefs.prefs
             .edit()
-            .putInt(selectedClass.classId, selectedClass.hashCode())
+            .putInt(selectedClass.classId, uuid)
             .apply()
 
         viewModel.getClasses()
     }
 
     private fun cancelSchedule(selectedClass: GymClass) {
-        alarmScheduler.cancel(selectedClass)
+        val uuid = repo.sharedPrefs.prefs.getInt(selectedClass.classId, 0)
+
+        alarmScheduler.cancel(uuid)
 
         repo.sharedPrefs.prefs
             .edit()
