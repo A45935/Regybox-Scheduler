@@ -1,9 +1,8 @@
-package com.example.regyboxscheduler.utils
+package com.example.regyboxscheduler.alarms
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import androidx.work.*
 import com.example.regyboxscheduler.DependenciesContainer
 import org.jsoup.Jsoup
 

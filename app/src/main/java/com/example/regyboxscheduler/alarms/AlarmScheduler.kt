@@ -1,11 +1,10 @@
-package com.example.regyboxscheduler.utils
+package com.example.regyboxscheduler.alarms
 
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import com.example.regyboxscheduler.scheduler.GymClass
-import java.util.*
 
 class AlarmScheduler (
     private val context: Context

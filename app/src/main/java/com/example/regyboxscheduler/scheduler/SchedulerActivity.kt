@@ -1,22 +1,24 @@
 package com.example.regyboxscheduler.scheduler
 
 import android.app.Activity
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.app.PendingIntent.FLAG_IMMUTABLE
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.core.app.NotificationCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.regyboxscheduler.DependenciesContainer
-import com.example.regyboxscheduler.utils.AlarmScheduler
-import com.example.regyboxscheduler.utils.SchedulerBroadcastReceiver
+import com.example.regyboxscheduler.R
+import com.example.regyboxscheduler.alarms.AlarmScheduler
 import com.example.regyboxscheduler.utils.viewModelInit
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -46,6 +48,10 @@ class SchedulerActivity: ComponentActivity() {
         AlarmScheduler(this)
     }
 
+    private val notificationManager by lazy {
+        getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    }
+
     private fun scheduleClass(selectedClass: GymClass) {
         val uuid = alarmScheduler.schedule(selectedClass)
 
@@ -55,6 +61,8 @@ class SchedulerActivity: ComponentActivity() {
             .apply()
 
         viewModel.getClasses()
+
+        showNotification("Class Scheduled", "Auto Schedule for ${selectedClass.nome} at ${selectedClass.hora}")
     }
 
     private fun cancelSchedule(selectedClass: GymClass) {
@@ -68,10 +76,36 @@ class SchedulerActivity: ComponentActivity() {
             .apply()
 
         viewModel.getClasses()
+
+        removeNotification()
+    }
+
+    private fun showNotification(bigMessage: String, smallMessage: String) {
+        val notification = NotificationCompat.Builder(applicationContext, "channel_id")
+            .setSmallIcon(R.drawable.notification_icon)
+            .setContentTitle(bigMessage)
+            .setContentText(smallMessage)
+            .build()
+
+        notificationManager.notify(1, notification)
+    }
+
+    private fun removeNotification() {
+        notificationManager.cancel(1)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                "channel_id",
+                "Channel name",
+                NotificationManager.IMPORTANCE_HIGH
+            )
+            val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            manager.createNotificationChannel(channel)
+        }
 
         setContent {
             val timestamp by viewModel.timestamp.collectAsState()
