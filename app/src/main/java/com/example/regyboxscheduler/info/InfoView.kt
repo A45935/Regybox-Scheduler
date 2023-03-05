@@ -13,9 +13,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.regyboxscheduler.APP_VERSION
+import com.example.regyboxscheduler.R
 import com.example.regyboxscheduler.ui.SchedulerTheme
 import com.example.regyboxscheduler.ui.TopBar
-import com.example.regyboxscheduler.R
 
 @Composable
 fun InfoView (

@@ -67,9 +67,7 @@ class RegyboxServices (
             .url("$HOST/$url")
             .build()
 
-        clientWithCookie.newCall(request).execute().use { response ->
-            println(response.body.string())
-        }
+        clientWithCookie.newCall(request).execute()
     }
 
     fun cancelClass (classId: String, data: String, ano: String, x: String) {
@@ -77,8 +75,16 @@ class RegyboxServices (
             .url("$HOST/php/aulas/cancela_aula.php?id_aula=$classId&data=$data&source=mes&ano=$ano&x=$x")
             .build()
 
-        clientWithCookie.newCall(request).execute().use { response ->
-            println(response.body.string())
+        clientWithCookie.newCall(request).execute()
+    }
+
+    fun getBoxes (): String {
+        val request = Request.Builder()
+            .url("$HOST/php/login/escolha_clube.php?lang=pt")
+            .build()
+
+        httpClient.newCall(request).execute().use { response ->
+            return response.body.string()
         }
     }
 }

@@ -1,5 +1,7 @@
 package com.example.regyboxscheduler.login
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -12,6 +14,15 @@ import com.example.regyboxscheduler.utils.Cookies
 import com.example.regyboxscheduler.utils.viewModelInit
 
 class LoginActivity : ComponentActivity() {
+
+    companion object {
+        fun navigate(origin: Activity) {
+            with(origin) {
+                val intent = Intent(this, LoginActivity::class.java)
+                startActivity(intent)
+            }
+        }
+    }
 
     private val repo by lazy {
         (application as DependenciesContainer)
@@ -31,8 +42,9 @@ class LoginActivity : ComponentActivity() {
 
         setContent {
             LoginView(
-                onLoginRequest = { boxId, username, password ->
-                    viewModel.login(boxId, username, password) { cookie ->
+                boxName = repo.sharedPrefs.selectedBox!!.name,
+                onLoginRequest = { username, password ->
+                    viewModel.login(repo.sharedPrefs.selectedBox!!.id, username, password) { cookie ->
                         if(cookie != null) {
                             repo.sharedPrefs.cookies = Cookies("%2A$cookie", cookie)
                             SchedulerActivity.navigate(this)
@@ -43,7 +55,11 @@ class LoginActivity : ComponentActivity() {
                         }
                     }
                 },
-                onInfoRequest = { InfoActivity.navigate(this) }
+                onInfoRequest = { InfoActivity.navigate(this) },
+                onBackRequest = {
+                    repo.sharedPrefs.selectedBox = null
+                    finish()
+                }
             )
         }
     }

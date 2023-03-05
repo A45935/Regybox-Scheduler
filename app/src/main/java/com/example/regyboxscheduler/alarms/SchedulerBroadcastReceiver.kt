@@ -6,9 +6,6 @@ import android.content.Intent
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
-import com.example.regyboxscheduler.DependenciesContainer
-import com.example.regyboxscheduler.services.RegyboxServices
-import org.jsoup.Jsoup
 
 class SchedulerBroadcastReceiver() : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {

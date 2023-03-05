@@ -2,7 +2,6 @@ package com.example.regyboxscheduler.utils
 
 import android.content.Context
 import android.content.SharedPreferences
-import java.util.UUID
 
 class SharedPrefs (private val context: Context) {
 
@@ -36,6 +35,35 @@ class SharedPrefs (private val context: Context) {
                     .putString(userCookie, value.user)
                     .apply()
         }
+
+    private val boxName = "savedBoxName"
+    private val boxId = "savedBoxId"
+
+    var selectedBox: Box?
+        get() {
+            val savedBoxName = prefs.getString(boxName, null)
+            val savedBoxId = prefs.getString(boxId,null)
+
+            return if (savedBoxName != null && savedBoxId != null)
+                Box(savedBoxName, savedBoxId)
+            else
+                null
+        }
+
+        set(value) {
+            if (value == null)
+                prefs.edit()
+                    .remove(boxName)
+                    .remove(boxId)
+                    .apply()
+            else
+                prefs.edit()
+                    .putString(boxName, value.name)
+                    .putString(boxId, value.id)
+                    .apply()
+        }
 }
 
 data class Cookies (val boxes: String, val user: String)
+
+data class Box (val name: String, val id: String)
