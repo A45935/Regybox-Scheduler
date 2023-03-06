@@ -11,11 +11,11 @@ class SchedulerBroadcastReceiver() : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context != null) {
             intent?.let {
-                val timestamp = it.getStringExtra("TIMESTAMP")
+                val date = it.getStringExtra("DATE")
                 val classId = it.getStringExtra("ID")
 
                 val scheduleWorkRequest = OneTimeWorkRequestBuilder<SchedulerWorker>()
-                    .setInputData(workDataOf("TIMESTAMP" to timestamp, "ID" to classId))
+                    .setInputData(workDataOf("DATE" to date, "ID" to classId))
                     .build()
 
                 WorkManager.getInstance(context.applicationContext).enqueue(scheduleWorkRequest)

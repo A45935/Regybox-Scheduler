@@ -17,7 +17,7 @@ class AlarmScheduler (
         // Intent to start the Broadcast Receiver
         val broadcastIntent =
             Intent(context, SchedulerBroadcastReceiver::class.java)
-                .putExtra("TIMESTAMP", selectedClass.scheduleTime.toString())
+                .putExtra("DATE", selectedClass.date)
                 .putExtra("ID", selectedClass.classId)
 
         // The Pending Intent to pass in AlarmManager

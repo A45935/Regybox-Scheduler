@@ -19,6 +19,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.example.regyboxscheduler.DependenciesContainer
 import com.example.regyboxscheduler.R
 import com.example.regyboxscheduler.alarms.AlarmScheduler
+import com.example.regyboxscheduler.info.InfoActivity
 import com.example.regyboxscheduler.utils.viewModelInit
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -66,7 +67,7 @@ class SchedulerActivity: ComponentActivity() {
     }
 
     private fun cancelSchedule(selectedClass: GymClass) {
-        val uuid = repo.sharedPrefs.prefs.getInt(selectedClass.classId, 0)
+        val uuid = repo.sharedPrefs.prefs.getInt(repo.sharedPrefs.cookies!!.user + selectedClass.classId, 0)
 
         alarmScheduler.cancel(uuid)
 
@@ -116,6 +117,7 @@ class SchedulerActivity: ComponentActivity() {
                     repo.sharedPrefs.cookies = null
                     finish() 
                 },
+                onInfoRequest = { InfoActivity.navigate(this) },
                 date = SimpleDateFormat("E dd/MM/yyyy", Locale.getDefault()).format(Date(timestamp * 1000)) ,
                 classes = classes,
                 nextDayClasses = { viewModel.increaseDay() },
@@ -133,4 +135,4 @@ class SchedulerActivity: ComponentActivity() {
     }
 }
 
-data class GymClass(val classId: String, val nome: String, val hora: String, val scheduleTime: Long, var scheduled: Boolean = false)
+data class GymClass(val classId: String, val nome: String, val hora: String, val date: String, val scheduleTime: Long, var scheduled: Boolean = false)

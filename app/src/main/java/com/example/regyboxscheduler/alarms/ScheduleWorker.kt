@@ -12,13 +12,13 @@ class SchedulerWorker (appContext: Context, params: WorkerParameters) :
 {
     override suspend fun doWork(): Result {
         val repo = (applicationContext as DependenciesContainer)
-        val timestamp = inputData.getString("TIMESTAMP")
+        val date = inputData.getString("DATE")
         val scheduledClassId = inputData.getString("ID")
 
         return try {
-            require(timestamp != null && scheduledClassId != null)
+            require(date != null && scheduledClassId != null)
 
-            val doc = Jsoup.parse(repo.regyboxServices.getClasses(timestamp.padEnd(13, '0')))
+            val doc = Jsoup.parse(repo.regyboxServices.getClasses(date.padEnd(13, '0')))
 
             // cada aula tem 3 elentos row no-gap
             val rows = doc.getElementsByClass("row no-gap")
@@ -39,7 +39,7 @@ class SchedulerWorker (appContext: Context, params: WorkerParameters) :
                     val button = second[2].select("button").first()!!.attr("onClick")
                     val url = button.substringAfter("inscrever?','").substringBefore("')")
                     repo.regyboxServices.scheduleClass(url)
-                    repo.sharedPrefs.prefs.edit().remove(classId).apply()
+                    repo.sharedPrefs.prefs.edit().remove(repo.sharedPrefs.cookies!!.user + classId).apply()
                     break
                 }
             }
@@ -47,6 +47,7 @@ class SchedulerWorker (appContext: Context, params: WorkerParameters) :
             Result.success()
         }
         catch (e: Exception) {
+            println(e.message)
             Result.failure()
         }
     }

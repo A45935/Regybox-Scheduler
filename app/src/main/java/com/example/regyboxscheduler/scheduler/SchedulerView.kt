@@ -17,6 +17,7 @@ import com.example.regyboxscheduler.ui.TopBar
 @Composable
 fun ScheduleView (
     onLogoutRequest: () -> Unit,
+    onInfoRequest: () -> Unit,
     date: String,
     classes: List<GymClass>,
     nextDayClasses: () -> Unit,
@@ -29,7 +30,10 @@ fun ScheduleView (
             modifier = Modifier.fillMaxSize(),
             backgroundColor = MaterialTheme.colors.background,
             topBar = {
-                TopBar( onLogoutRequested = onLogoutRequest )
+                TopBar(
+                    onLogoutRequested = onLogoutRequest,
+                    onInfoRequested = onInfoRequest
+                )
             }
         ) { innerPadding ->
             Column(
@@ -116,6 +120,7 @@ fun GymClassInfoView(
 private fun SchedulerPreview() {
     ScheduleView (
         onLogoutRequest = {},
+        onInfoRequest = {},
         date = "22/03/2023",
         classes = demoClasses,
         nextDayClasses = {},
@@ -127,7 +132,7 @@ private fun SchedulerPreview() {
 
 private val demoClasses = buildList {
     repeat(10) {
-        add(GymClass("$it", "Class $it", "$it PM", 123344, it%2 == 0))
+        add(GymClass("$it", "Class $it", "$it PM", "", 123344, it%2 == 0))
     }
 }
 

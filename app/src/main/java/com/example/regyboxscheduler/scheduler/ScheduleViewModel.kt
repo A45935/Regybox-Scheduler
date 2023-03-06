@@ -29,7 +29,8 @@ class ScheduleViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             _classes.value =
                 try {
-                    val doc = Jsoup.parse(services.getClasses(_timestamp.value.toString().padEnd(13, '0')))
+                    val date = _timestamp.value.toString().padEnd(13, '0')
+                    val doc = Jsoup.parse(services.getClasses(date))
                     val classes = mutableListOf<GymClass>()
 
                     // cada aula tem 3 elementos row no-gap
@@ -55,7 +56,7 @@ class ScheduleViewModel(
                             val timeToSchedule = (System.currentTimeMillis()/1000) + detailsThird.substringAfter("tempo=").substringBefore('&').toLong()
                             val scheduled = sharedPrefs.prefs.getInt(sharedPrefs.cookies!!.user + classId, 0) != 0
 
-                            classes.add(GymClass(classId, first[0].ownText(), second[0].ownText(), timeToSchedule, scheduled))
+                            classes.add(GymClass(classId, first[0].ownText(), second[0].ownText(), date, timeToSchedule, scheduled))
                         }
                     }
 
