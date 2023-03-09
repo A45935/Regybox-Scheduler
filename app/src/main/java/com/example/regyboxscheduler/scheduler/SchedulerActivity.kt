@@ -12,14 +12,13 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.core.app.NotificationCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.regyboxscheduler.DependenciesContainer
-import com.example.regyboxscheduler.R
 import com.example.regyboxscheduler.alarms.AlarmScheduler
 import com.example.regyboxscheduler.info.InfoActivity
+import com.example.regyboxscheduler.utils.Notifications
 import com.example.regyboxscheduler.utils.viewModelInit
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -35,9 +34,7 @@ class SchedulerActivity: ComponentActivity() {
         }
     }
 
-    private val repo by lazy {
-        (application as DependenciesContainer)
-    }
+    private val repo by lazy { (application as DependenciesContainer) }
 
     private val viewModel by viewModels<ScheduleViewModel> {
         viewModelInit {
@@ -45,13 +42,9 @@ class SchedulerActivity: ComponentActivity() {
         }
     }
 
-    private val alarmScheduler by lazy {
-        AlarmScheduler(this)
-    }
+    private val alarmScheduler by lazy { AlarmScheduler(this) }
 
-    private val notificationManager by lazy {
-        getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-    }
+    private val notificationManager by lazy { Notifications(this) }
 
     private fun scheduleClass(selectedClass: GymClass) {
         val uuid = alarmScheduler.schedule(selectedClass)
@@ -63,7 +56,7 @@ class SchedulerActivity: ComponentActivity() {
 
         viewModel.getClasses()
 
-        showNotification(selectedClass.classId.toInt(),"Class Scheduled", "Auto Schedule for ${selectedClass.nome} at ${selectedClass.hora}")
+        notificationManager.showNotification(selectedClass.classId.toInt(),"Class Scheduled", "Auto Schedule for ${selectedClass.nome} at ${selectedClass.hora}")
     }
 
     private fun cancelSchedule(selectedClass: GymClass) {
@@ -78,21 +71,7 @@ class SchedulerActivity: ComponentActivity() {
 
         viewModel.getClasses()
 
-        removeNotification(selectedClass.classId.toInt())
-    }
-
-    private fun showNotification(id: Int, bigMessage: String, smallMessage: String) {
-        val notification = NotificationCompat.Builder(applicationContext, "channel_id")
-            .setSmallIcon(R.drawable.notification_icon)
-            .setContentTitle(bigMessage)
-            .setContentText(smallMessage)
-            .build()
-
-        notificationManager.notify(id, notification)
-    }
-
-    private fun removeNotification(id: Int) {
-        notificationManager.cancel(id)
+        notificationManager.removeNotification(selectedClass.classId.toInt())
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

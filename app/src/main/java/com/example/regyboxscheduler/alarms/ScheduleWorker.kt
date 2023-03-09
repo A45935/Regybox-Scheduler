@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.regyboxscheduler.DependenciesContainer
+import com.example.regyboxscheduler.utils.Notifications
 import org.jsoup.Jsoup
 
 // Este worker é executado quando abrem as inscrições, realizando scraping da informação necessária para marcar a aula (id_rato, x)
@@ -12,6 +13,8 @@ class SchedulerWorker (appContext: Context, params: WorkerParameters) :
 {
     override suspend fun doWork(): Result {
         val repo = (applicationContext as DependenciesContainer)
+        val notificationManager by lazy { Notifications(applicationContext) }
+
         val date = inputData.getString("DATE")
         val scheduledClassId = inputData.getString("ID")
 
@@ -40,6 +43,7 @@ class SchedulerWorker (appContext: Context, params: WorkerParameters) :
                     val url = button.substringAfter("inscrever?','").substringBefore("')")
                     repo.regyboxServices.scheduleClass(url)
                     repo.sharedPrefs.prefs.edit().remove(repo.sharedPrefs.cookies!!.user + classId).apply()
+                    notificationManager.showNotification(0, "Class successfully scheduled", "Check regybox app")
                     break
                 }
             }
